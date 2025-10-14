@@ -14,16 +14,6 @@ type Config struct {
 	Token    string `json:"token"`
 }
 
-type RouterConfig struct {
-	*Config
-	Presistant bool `json:"presistant"`
-}
-
-type WatchConfig struct {
-	*Config
-	Channel string `json:"channel"`
-}
-
 var defaulturl = "localhost:6379"
 var defaultpassword = "passme"
 

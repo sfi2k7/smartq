@@ -3,3 +3,7 @@ cmd/*/**
 readme
 smartq
 .idea
+*.json
+cmd/
+cmd/**
+*.sh

@@ -36,7 +36,7 @@ func (w *Watch) Name() string {
 	return w.name
 }
 
-func InitJob(id, channel string) error {
+func InitJob(channel, id string) error {
 	if len(id) == 0 {
 		return errors.New("id cannot be empty")
 	}
@@ -67,24 +67,28 @@ func (w *Watch) Start(channel string, callback func(*WatchContext) *RouteToken) 
 
 	workingset := "workingset_" + channel
 
-	var ids []string
 	var err error
+	var ids []string
 
 	for {
+
 		select {
 		case <-ex:
 			return
 		default:
-			if len(ids) == 0 {
-				ids, err = w.r.popfromchannel(channel, workingset, 10)
-				if err != nil {
-					if err == ErrChannelPaused {
-						// fmt.Println("channel is paused:", channel)
-					}
-
-					time.Sleep(time.Millisecond * 250)
-					continue
+			ids, err = w.r.popfromchannel(channel, workingset, 10)
+			if err != nil {
+				if err == ErrChannelPaused {
+					// fmt.Println("channel is paused:", channel)
 				}
+
+				time.Sleep(time.Millisecond * 250)
+				continue
+			}
+
+			if len(ids) == 0 {
+				time.Sleep(time.Millisecond * 250)
+				continue
 			}
 
 			for _, id := range ids {
@@ -125,6 +129,8 @@ func (w *Watch) Start(channel string, callback func(*WatchContext) *RouteToken) 
 					w.r.routetochannel(id, channel, ctx.haschanged)
 				}
 			}
+
+			ids = []string{}
 		}
 	}
 }

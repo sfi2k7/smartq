@@ -195,6 +195,8 @@ func (r *repo) popfromchannel(channel, workingset string, count int) ([]string, 
 		return nil, errors.New("connection to redis is nil: how?")
 	}
 
+	//TODO: Pull items from workingset first - in case process is crashed and now resumes
+
 	items, err := c.ZPopMin(context.Background(), channelKey(channel), int64(count)).Result()
 	if err != nil {
 		return nil, errors.New("no items in channel")
